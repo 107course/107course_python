@@ -1,0 +1,28 @@
+將原本穿插中文，斜線，空格的不規則日期取代成較為有規則的格式才有辦法開始後續的分析。
+
+1. 先取代一些年月日等文字。
+Edit cells -> transform... -> GREL
+value.replace(" ", "").replace("/", "-").replace(".","-").replace("年","-").replace("月","-").replace("日","")
+
+2. 判斷 6 碼為民國紀年並且是 99 年以前加上 11 之後轉西元年。若為 7 碼則為100年以後的民國紀年要加上 1911 轉為西元年... 
+Edit cells -> transform... -> GREL
+if(isNotNull(value.match(/\d{6}/)), value.toDate('yymmdd').inc(11, 'year').toString('yyyy-mm-dd'), if(isNotNull(value.match(/\d{7}/)),value.toDate('yyymmdd').inc(1911, 'year').toString('yyyy-mm-dd'),if(isNotNull(value.match(/\d{3}-\d{2}-.*/)),value.toDate('yyy-mm-dd').inc(1911, 'year').toString('yyyy-mm-dd'),value.toDate('yy-mm-').inc(11, 'year').toString('yyyy-mm-dd'))))
+
+五都的文字正規化
+Edit Cell -> Transform -> GREL
+value.replace("臺","台").replace(/^北縣/,"台北縣").replace(/^北市/,"台北市")
+value.replace(/((台北縣|台中縣|台南縣|高雄縣).+)(市|鄉|鎮)/,'$1區')
+value.replace("台北縣","新北市").replace("台中縣","台中市").replace("台南縣","台南市").replac e("高雄縣","高雄市")
+
+
+大量的把地址送到 Google Map API 分析，並且把取得的 JSON 資料放到一個新的 column
+Edit Column -> Add column by fetching urls -> GREL
+"http://maps.google.com/maps/api/geocode/json?sensor=false&language=zh-tw&region=tw&address=" + escape(value, "url")
+
+取出需要的欄位，如鄉鎮區資料
+Edit Column -> Add column base on this column... -> GREL
+郵遞區號： value.parseJson().results[0].address_components[6].long_name
+縣市： value.parseJson().results[0].address_components[4].long_name
+鄉鎮市區： value.parseJson().results[0].address_components[3].long_name
+
+
