@@ -5,5 +5,6 @@ https://docs.google.com/a/tea.nknush.kh.edu.tw/presentation/d/14reYXA5_DQPZ8Xn4p
 工具下載：
 anaconda for python3.5
 https://www.continuum.io/downloads
+
 openrefine 2.6
 http://openrefine.org/download.html
