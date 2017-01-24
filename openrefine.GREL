@@ -25,4 +25,6 @@ Edit Column -> Add column base on this column... -> GREL
 縣市： value.parseJson().results[0].address_components[4].long_name
 鄉鎮市區： value.parseJson().results[0].address_components[3].long_name
 
+格式化地址：value.parseJson().results[0].formatted_address
+
 
